@@ -17,3 +17,5 @@ app.name={NOME_DO_JOGO}
 app.width={LARGURA_DA_TELA}
 app.height={ALTURA_DA_TELA}
 ~~~
+
+## UI componentes

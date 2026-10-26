@@ -13,6 +13,20 @@ public interface Input {
     /** Posição do cursor em coordenadas de janela (origem no canto superior esquerdo). */
     Vector2f getMousePosition();
 
+    /** {@code button} usa as constantes {@code GLFW_MOUSE_BUTTON_*}. */
+    boolean isMouseDown(int button);
+
+    /**
+     * {@code true} apenas no frame em que o botão foi pressionado, a menos que a UI tenha consumido
+     * o clique ({@link #consumeClick()}); assim o gameplay não reage a cliques na interface.
+     */
+    boolean isMouseJustPressed(int button);
+
+    /** Marca o clique deste frame como tratado pela UI. */
+    void consumeClick();
+
+    boolean isClickConsumed();
+
     /** W ou seta para cima. */
     boolean up();
 

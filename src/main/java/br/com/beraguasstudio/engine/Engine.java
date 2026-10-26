@@ -23,6 +23,10 @@ import br.com.beraguasstudio.engine.io.EngineProperties;
 import br.com.beraguasstudio.engine.render.SpriteRenderer;
 import br.com.beraguasstudio.engine.render.Viewport;
 import br.com.beraguasstudio.engine.render.Texture;
+import br.com.beraguasstudio.engine.ui.FontAtlas;
+import br.com.beraguasstudio.engine.ui.UICanvas;
+import br.com.beraguasstudio.engine.ui.UIInputSystem;
+import br.com.beraguasstudio.engine.ui.UIRenderer;
 import br.com.beraguasstudio.engine.window.Window;
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
@@ -44,6 +48,10 @@ public final class Engine implements AutoCloseable {
     private final SpriteRenderer spriteRenderer;
     private final RenderSystem renderSystem;
     private final GameObjectManager gameObjects;
+    private final UICanvas canvas;
+    private final UIRenderer uiRenderer;
+    private final UIInputSystem uiInput = new UIInputSystem();
+    private final FontAtlas uiFont;
     private final Map<String, Texture> textures = new HashMap<>();
     private final World world;
     private GameLoop loop;
@@ -54,6 +62,10 @@ public final class Engine implements AutoCloseable {
         input.attach(window.handle());
         this.spriteRenderer = new SpriteRenderer();
         this.renderSystem = new RenderSystem(spriteRenderer);
+        this.canvas = new UICanvas(config.getWidth(), config.getHeight());
+        this.uiRenderer = new UIRenderer();
+        this.uiFont = new FontAtlas(FontAtlas.DEFAULT_FONT, 32f);
+        canvas.setFont(uiFont);
         this.gameObjects = new GameObjectManager(input, AssetsConfig.load(), EngineProperties.load(),
                 config.getWidth(), config.getHeight(), this::loadTexture, this::stop);
         this.world = buildWorld(input, renderSystem, gameObjects, customize);
@@ -116,6 +128,14 @@ public final class Engine implements AutoCloseable {
         return world;
     }
 
+    /**
+     * Raiz da UI. Fica sobre o framebuffer inteiro (inclusive as faixas do letterbox), é desenhada
+     * depois do mundo e não sofre câmera, luz ou partículas.
+     */
+    public UICanvas ui() {
+        return canvas;
+    }
+
     public Input input() {
         return input;
     }
@@ -136,6 +156,7 @@ public final class Engine implements AutoCloseable {
             public void pollEvents() {
                 input.beginFrame();
                 window.pollEvents();
+                updateUi();
             }
 
             @Override
@@ -163,10 +184,20 @@ public final class Engine implements AutoCloseable {
                 glClear(GL_COLOR_BUFFER_BIT);
                 renderSystem.render(alpha, config.getWidth(), config.getHeight());
                 glDisable(GL_SCISSOR_TEST);
+
+                // passe de UI: framebuffer inteiro, projeção própria, depois de tudo do mundo
+                uiRenderer.render(canvas, fbWidth, fbHeight);
                 window.swapBuffers();
             }
         });
         loop.run();
+    }
+
+    /** Antes do passo fixo: reflow só se a janela mudou, hover/clique e consumo de eventos da UI. */
+    private void updateUi() {
+        canvas.setScreenSize(window.framebufferWidth(), window.framebufferHeight());
+        canvas.update();
+        uiInput.update(input, canvas, window.width(), window.height());
     }
 
     public void stop() {
@@ -179,6 +210,8 @@ public final class Engine implements AutoCloseable {
         textures.values().forEach(Texture::close);
         textures.clear();
         spriteRenderer.close();
+        uiRenderer.close();
+        uiFont.close();
         window.close();
     }
 }

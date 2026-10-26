@@ -1,0 +1,2 @@
+Roboto Regular - Copyright 2015 Google Inc. Licenciada sob Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0).
+Fonte: https://github.com/googlefonts/roboto-2
