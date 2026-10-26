@@ -12,4 +12,16 @@ public interface Input {
 
     /** Posição do cursor em coordenadas de janela (origem no canto superior esquerdo). */
     Vector2f getMousePosition();
+
+    /** W ou seta para cima. */
+    boolean up();
+
+    /** S ou seta para baixo. */
+    boolean down();
+
+    /** A ou seta para a esquerda. */
+    boolean left();
+
+    /** D ou seta para a direita. */
+    boolean right();
 }

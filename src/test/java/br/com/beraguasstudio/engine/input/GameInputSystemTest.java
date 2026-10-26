@@ -3,7 +3,7 @@ package br.com.beraguasstudio.engine.input;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
+import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
@@ -23,6 +23,21 @@ class GameInputSystemTest {
         input.beginFrame();
         assertTrue(input.isKeyDown(GLFW_KEY_SPACE));
         assertFalse(input.isKeyJustPressed(GLFW_KEY_SPACE));
+    }
+
+    @Test
+    void directionsAcceptWasdAndArrows() {
+        input.onKey(GLFW_KEY_W, GLFW_PRESS);
+        input.onKey(GLFW_KEY_LEFT, GLFW_PRESS);
+        assertTrue(input.up());
+        assertTrue(input.left());
+        assertFalse(input.down());
+        assertFalse(input.right());
+
+        input.onKey(GLFW_KEY_DOWN, GLFW_PRESS);
+        input.onKey(GLFW_KEY_D, GLFW_PRESS);
+        assertTrue(input.down());
+        assertTrue(input.right());
     }
 
     @Test

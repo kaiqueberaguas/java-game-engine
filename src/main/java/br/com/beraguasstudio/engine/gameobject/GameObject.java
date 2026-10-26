@@ -2,6 +2,7 @@ package br.com.beraguasstudio.engine.gameobject;
 
 import br.com.beraguasstudio.engine.input.Input;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -13,6 +14,7 @@ import java.util.Optional;
  */
 public abstract class GameObject {
 
+    /** {@code null} em objetos sem gráfico (ex.: controladores como um spawner). */
     private final String spritePath;
     private GameObjectManager manager;
     private Sprite sprite;
@@ -27,6 +29,14 @@ public abstract class GameObject {
      */
     protected GameObject(String spritePath) {
         this.spritePath = Objects.requireNonNull(spritePath, "spritePath");
+    }
+
+    /**
+     * Objeto sem gráfico: não tem sprite nem é desenhado, mas mantém transform e ciclo de vida.
+     * {@link #sprite()} retorna {@code null}.
+     */
+    protected GameObject() {
+        this.spritePath = null;
     }
 
     /** Chamado uma vez, antes do primeiro {@link #update}. Estado inicial (posição, escala) entra aqui. */
@@ -51,6 +61,7 @@ public abstract class GameObject {
         return transform;
     }
 
+    /** O sprite deste objeto; {@code null} se foi criado sem gráfico. */
     public final Sprite sprite() {
         return sprite;
     }
@@ -71,6 +82,11 @@ public abstract class GameObject {
     /** Primeiro objeto ativo do tipo dado. */
     protected final <T extends GameObject> Optional<T> find(Class<T> type) {
         return manager.find(type);
+    }
+
+    /** Todos os objetos ativos do tipo dado. */
+    protected final <T extends GameObject> List<T> findAll(Class<T> type) {
+        return manager.findAll(type);
     }
 
     /**

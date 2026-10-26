@@ -3,6 +3,7 @@ package br.com.beraguasstudio.engine;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -50,6 +51,23 @@ class GameObjectTest {
 
         Optional<Probe> findProbe() {
             return find(Probe.class);
+        }
+    }
+
+    public static class Controller extends GameObject {
+        int updates;
+
+        public Controller() {
+            super();
+        }
+
+        @Override
+        public void update(double deltaTime) {
+            updates++;
+        }
+
+        List<Probe> probes() {
+            return findAll(Probe.class);
         }
     }
 
@@ -141,6 +159,30 @@ class GameObjectTest {
         a.exposedTransform().scale().x = -1f;
         assertEquals(0f, a.sprite().width());
         assertFalse(a.sprite().overlaps(b.sprite()));
+    }
+
+    @Test
+    void objectWithoutSpriteHasNoSpriteAndStillUpdates() {
+        Controller controller = manager.spawn(Controller.class);
+
+        world.process();
+        world.process();
+
+        assertNull(controller.sprite());
+        assertNotNull(controller.transform());
+        assertEquals(2, controller.updates);
+    }
+
+    @Test
+    void findAllReturnsOnlyActiveObjectsOfType() {
+        Controller controller = manager.spawn(Controller.class);
+        Probe a = manager.spawn(Probe.class);
+        Probe b = manager.spawn(Probe.class);
+        world.process();
+
+        assertEquals(List.of(a, b), controller.probes());
+        a.destroy();
+        assertEquals(List.of(b), controller.probes());
     }
 
     @Test

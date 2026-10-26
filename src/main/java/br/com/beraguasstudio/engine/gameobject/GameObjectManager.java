@@ -64,11 +64,15 @@ public final class GameObjectManager {
 
         EntityEdit edit = world.edit(world.create());
         TransformComponent transformComponent = edit.create(TransformComponent.class);
-        SpriteComponent spriteComponent = edit.create(SpriteComponent.class);
-        spriteComponent.texture = loadTexture(assets.sprite(obj.spritePath()));
+        Sprite sprite = null;
+        if (obj.spritePath() != null) {
+            SpriteComponent spriteComponent = edit.create(SpriteComponent.class);
+            spriteComponent.texture = loadTexture(assets.sprite(obj.spritePath()));
+            sprite = new Sprite(spriteComponent, transformComponent);
+        }
         edit.create(DomainBindingComponent.class).instance = obj;
 
-        obj.attach(this, new Transform(transformComponent), new Sprite(spriteComponent, transformComponent));
+        obj.attach(this, new Transform(transformComponent), sprite);
         objects.add(obj);
         return obj;
     }
@@ -103,6 +107,16 @@ public final class GameObjectManager {
             }
         }
         return Optional.empty();
+    }
+
+    <T extends GameObject> List<T> findAll(Class<T> type) {
+        List<T> result = new ArrayList<>();
+        for (GameObject obj : objects) {
+            if (obj.isActive() && type.isInstance(obj)) {
+                result.add(type.cast(obj));
+            }
+        }
+        return result;
     }
 
     void unregister(GameObject obj) {

@@ -1,9 +1,6 @@
 package br.com.beraguasstudio.engine.input;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_LAST;
-import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
-import static org.lwjgl.glfw.GLFW.glfwSetCursorPosCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
+import static org.lwjgl.glfw.GLFW.*;
 
 import org.joml.Vector2f;
 
@@ -53,6 +50,26 @@ public final class GameInputSystem implements Input {
     @Override
     public Vector2f getMousePosition() {
         return new Vector2f(mouse);
+    }
+
+    @Override
+    public boolean up() {
+        return isKeyDown(GLFW_KEY_W) || isKeyDown(GLFW_KEY_UP);
+    }
+
+    @Override
+    public boolean down() {
+        return isKeyDown(GLFW_KEY_S) || isKeyDown(GLFW_KEY_DOWN);
+    }
+
+    @Override
+    public boolean left() {
+        return isKeyDown(GLFW_KEY_A) || isKeyDown(GLFW_KEY_LEFT);
+    }
+
+    @Override
+    public boolean right() {
+        return isKeyDown(GLFW_KEY_D) || isKeyDown(GLFW_KEY_RIGHT);
     }
 
     private static boolean inRange(int keyCode) {
