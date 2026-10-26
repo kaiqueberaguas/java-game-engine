@@ -1,0 +1,29 @@
+# Maven
+target/
+dependency-reduced-pom.xml
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+release.properties
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+*.swp
+
+# SO
+.DS_Store
+Thumbs.db
+
+# Logs e dumps da JVM
+*.log
+hs_err_pid*
+replay_pid*
+
+# IA 
+CLAUDE.md
+AGENT.md
